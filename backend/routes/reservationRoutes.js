@@ -4,8 +4,12 @@ const router = express.Router();
 
 let reservations = [];
 
+// POST - Create reservation
 router.post("/", (req, res) => {
-    const { name, email, seatNumber } = req.body;
+    console.log("POST request received");
+    console.log("Request body:", req.body);
+
+    const { name, email, seatNumber } = req.body || {};
 
     if (!name || !email || !seatNumber) {
         return res.status(400).json({
@@ -29,6 +33,7 @@ router.post("/", (req, res) => {
     });
 });
 
+// GET - Get all reservations
 router.get("/", (req, res) => {
     res.json(reservations);
 });

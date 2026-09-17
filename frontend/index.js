@@ -4,6 +4,9 @@ const selectedSeatText = document.getElementById("selected-seat");
 const holdButton = document.getElementById("hold-button");
 const message = document.getElementById("message");
 
+// Backend API URL
+const API_URL = "http://localhost:5000/api/reservations";
+
 // Total number of seats
 const totalSeats = 20;
 
@@ -41,6 +44,7 @@ let selectedSeat = null;
 // ================================
 
 function renderSeats() {
+
   // Clear the seat map
   seatMap.innerHTML = "";
 
@@ -88,7 +92,7 @@ function renderSeats() {
       seatButton.disabled = true;
     }
 
-    // Add seat to the page
+    // Add seat to page
     seatMap.appendChild(seatButton);
   }
 }
@@ -128,7 +132,6 @@ function selectSeat(seatNumber, seatButton) {
 
 function updateHoldButton() {
 
-  // Get email
   const email = emailInput.value.trim();
 
   // Button only works when:
@@ -148,10 +151,10 @@ emailInput.addEventListener("input", () => {
 
 
 // ================================
-// HOLD BUTTON
+// HOLD / RESERVE BUTTON
 // ================================
 
-holdButton.addEventListener("click", () => {
+holdButton.addEventListener("click", async () => {
 
   const email = emailInput.value.trim();
 
@@ -166,13 +169,109 @@ holdButton.addEventListener("click", () => {
     return;
   }
 
-  // Temporary frontend response
-  // Later this will send data to the backend
+  // Disable button while request is processing
+  holdButton.disabled = true;
 
   showMessage(
-    `Seat ${selectedSeat} has been selected for ${email}. The backend connection will be added next.`,
+    "Sending reservation...",
     "success"
   );
+
+  try {
+
+    // Send reservation to backend
+    const response = await fetch(API_URL, {
+
+      method: "POST",
+
+      headers: {
+        "Content-Type": "application/json"
+      },
+
+      body: JSON.stringify({
+
+        name: "Elias",
+
+        email: email,
+
+        seatNumber: selectedSeat
+
+      })
+
+    });
+
+    // Convert backend response to JavaScript object
+    const data = await response.json();
+
+    // Check if backend returned an error
+    if (!response.ok) {
+
+      throw new Error(
+        data.message || "Reservation failed"
+      );
+
+    }
+
+    // ================================
+    // RESERVATION SUCCESSFUL
+    // ================================
+
+    showMessage(
+      `Seat ${data.reservation.seatNumber} has been reserved successfully!`,
+      "success"
+    );
+
+    console.log(
+      "Reservation created:",
+      data.reservation
+    );
+
+    // Change the seat status locally
+    const seat = seats.find(
+      (seat) => seat.number === selectedSeat
+    );
+
+    if (seat) {
+      seat.status = "confirmed";
+    }
+
+    // Remember the reserved seat
+    const reservedSeat = selectedSeat;
+
+    // Clear selected seat
+    selectedSeat = null;
+
+    selectedSeatText.textContent = "No seat selected";
+
+    // Re-render seats
+    renderSeats();
+
+    console.log(
+      `Seat ${reservedSeat} is now confirmed.`
+    );
+
+    // Clear email
+    emailInput.value = "";
+
+    // Disable button
+    holdButton.disabled = true;
+
+  } catch (error) {
+
+    console.error(
+      "Reservation error:",
+      error
+    );
+
+    showMessage(
+      `Reservation failed: ${error.message}`,
+      "error"
+    );
+
+    // Allow user to try again
+    updateHoldButton();
+  }
+
 });
 
 
