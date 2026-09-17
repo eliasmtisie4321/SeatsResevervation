@@ -1,11 +1,72 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SeatRESEVATI</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Seat Reservation System</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-    
+  <main class="container">
+    <header class="page-header">
+      <p class="eyebrow">Reservation System</p>
+      <h1>Choose Your Seat</h1>
+      <p class="subtitle">
+        Select an available seat and enter your email to place a temporary hold.
+      </p>
+    </header>
+
+```
+<section class="reservation-card">
+  <div class="form-group">
+    <label for="email">Email address</label>
+    <input
+      type="email"
+      id="email"
+      placeholder="you@example.com"
+    />
+  </div>
+
+  <div class="legend">
+    <div class="legend-item">
+      <span class="legend-seat available"></span>
+      <span>Available</span>
+    </div>
+
+    <div class="legend-item">
+      <span class="legend-seat held"></span>
+      <span>Held</span>
+    </div>
+
+    <div class="legend-item">
+      <span class="legend-seat confirmed"></span>
+      <span>Confirmed</span>
+    </div>
+  </div>
+
+  <div class="screen-label">
+    <span></span>
+    <p>FRONT OF VENUE</p>
+    <span></span>
+  </div>
+
+  <div id="seat-map" class="seat-map"></div>
+
+  <div class="selection-summary">
+    <p>Selected seat: <strong id="selected-seat">None</strong></p>
+    <button id="hold-button" class="hold-button" disabled>
+      Hold Seat
+    </button>
+  </div>
+
+  <div id="message" class="message hidden"></div>
+</section>
+```
+
+  </main>
+
+  <script src="index.js"></script>
+
 </body>
 </html>
